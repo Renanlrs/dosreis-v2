@@ -2,8 +2,8 @@
 <style>
   :root{--bg:#050505;--green:#7CFF39;--accent:#9DFF5A;--text:#fff;--text-2:rgba(255,255,255,.66);--glass:rgba(255,255,255,.05);--border:rgba(255,255,255,.10)}
   *{margin:0;padding:0;box-sizing:border-box}
-  html,body{height:100%}
-  body{font-family:'Inter',ui-sans-serif,system-ui,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);overflow:hidden;-webkit-font-smoothing:antialiased}
+  html{height:100%;scroll-behavior:smooth}
+  body{font-family:'Inter',ui-sans-serif,system-ui,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased}
   .headfont{font-family:'Arial Narrow','Helvetica Neue',Impact,sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.03em}
 
   /* Ambient aurora */
@@ -15,7 +15,7 @@
     background:linear-gradient(rgba(124,255,57,.35) 1px,transparent 1px),linear-gradient(90deg,rgba(124,255,57,.35) 1px,transparent 1px);
     background-size:44px 44px;mask-image:radial-gradient(60% 55% at 50% 42%,#000,transparent 75%)}
 
-  .shell{position:relative;z-index:2;height:100vh;display:flex;flex-direction:column}
+  .shell{position:relative;z-index:2;min-height:100vh;display:flex;flex-direction:column}
   nav{display:flex;align-items:center;justify-content:space-between;padding:22px clamp(20px,5vw,52px);opacity:0;animation:fd .8s .1s forwards}
   .n-logo{height:44px;filter:drop-shadow(0 0 14px rgba(124,255,57,.3))}
   .n-cta{display:inline-flex;gap:8px;align-items:center;padding:11px 20px;border-radius:999px;background:var(--green);color:#041000;font-weight:600;font-size:13.5px;text-decoration:none;transition:.25s;box-shadow:0 8px 28px rgba(124,255,57,.28)}
@@ -23,8 +23,8 @@
 
   main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 20px}
 
-  .hero-logo{position:relative;width:min(34vh,260px);height:min(34vh,260px);display:grid;place-items:center;margin-bottom:26px;opacity:0;animation:pop 1s .2s cubic-bezier(.22,1,.36,1) forwards}
-  .hero-logo img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 40px rgba(124,255,57,.35));animation:bob 6s ease-in-out infinite alternate}
+  .hero-logo{position:relative;width:min(34vh,260px);height:min(34vh,260px);display:grid;place-items:center;margin-bottom:26px;border-radius:50%;background:radial-gradient(circle at 50% 44%,#070d07 46%,rgba(7,13,7,.5) 64%,transparent 77%);opacity:0;animation:pop 1s .2s cubic-bezier(.22,1,.36,1) forwards}
+  .hero-logo img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 40px rgba(124,255,57,.35));-webkit-mask:radial-gradient(circle at 50% 44%,#000 57%,transparent 73%);mask:radial-gradient(circle at 50% 44%,#000 57%,transparent 73%);animation:bob 6s ease-in-out infinite alternate}
   .ring{position:absolute;inset:-14% ;border-radius:50%;pointer-events:none}
   .ring.r1{background:conic-gradient(from 0deg,transparent 0 70%,rgba(124,255,57,.9) 85%,transparent 100%);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 0);mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 0);animation:spin 7s linear infinite}
   .ring.r2{inset:-26%;background:conic-gradient(from 180deg,transparent 0 60%,rgba(157,255,90,.5) 78%,transparent 92%);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 1px),#000 0);mask:radial-gradient(farthest-side,transparent calc(100% - 1px),#000 0);animation:spin 12s linear infinite reverse}
@@ -61,6 +61,40 @@
   @keyframes fu{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
   @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important}}
   @media(max-width:640px){.hero-logo{width:min(26vh,180px);height:min(26vh,180px)}.stats{gap:22px}}
+
+  /* ---------- CONTEUDO ROLAVEL ---------- */
+  .content{position:relative;z-index:2;max-width:1080px;margin:0 auto;padding:10px clamp(20px,5vw,48px) 40px}
+  .sec2{padding:58px 0;border-top:1px solid var(--border)}
+  .eye{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--green);margin-bottom:12px}
+  .sec2 h2{font-size:clamp(26px,3.6vw,42px);line-height:1.06;font-weight:800;letter-spacing:-.01em;margin-bottom:14px;text-wrap:balance}
+  .sec2 .lead{color:var(--text-2);max-width:640px;line-height:1.6;margin-bottom:30px}
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:720px){.g2{grid-template-columns:1fr}}
+  .tcard{background:var(--glass);border:1px solid var(--border);border-radius:18px;padding:24px;transition:.25s}
+  .tcard:hover{border-color:rgba(124,255,57,.4);transform:translateY(-4px);box-shadow:0 16px 40px rgba(124,255,57,.08)}
+  .tcard .ic{font-size:26px;margin-bottom:12px}
+  .tcard h3{font-size:19px;font-weight:700;margin-bottom:8px}
+  .tcard p{color:var(--text-2);font-size:14.5px;line-height:1.6}
+  .tcard .res{margin-top:12px;font-size:13px;color:var(--green);font-weight:600}
+  .steps{display:grid;gap:14px;counter-reset:s}
+  .step{display:flex;gap:16px;align-items:flex-start;background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:18px 20px}
+  .step .n{flex:none;height:34px;width:34px;border-radius:50%;display:grid;place-items:center;background:var(--green);color:#041000;font-weight:700}
+  .step h4{font-size:16px;font-weight:700;margin-bottom:4px}
+  .step p{color:var(--text-2);font-size:14px;line-height:1.55}
+  .qa{border:1px solid var(--border);border-radius:14px;padding:0;margin-bottom:10px;background:var(--glass);overflow:hidden}
+  .qa summary{cursor:pointer;list-style:none;padding:16px 18px;font-weight:600;font-size:15px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .qa summary::-webkit-details-marker{display:none}
+  .qa summary::after{content:"+";color:var(--green);font-size:20px;font-weight:700}
+  .qa[open] summary::after{content:"−"}
+  .qa p{padding:0 18px 16px;color:var(--text-2);font-size:14px;line-height:1.6}
+  .band{position:relative;z-index:2;max-width:1080px;margin:10px auto 46px;padding:56px clamp(24px,5vw,56px);border-radius:28px;text-align:center;
+    background:radial-gradient(120% 130% at 50% 0%,rgba(124,255,57,.16),rgba(124,255,57,.04) 55%,transparent);border:1px solid rgba(124,255,57,.3)}
+  .band h2{font-size:clamp(26px,4vw,44px);font-weight:800;margin-bottom:12px}
+  .band p{color:var(--text-2);max-width:520px;margin:0 auto 22px}
+  .band .btn{padding:15px 32px;border-radius:999px;background:var(--green);color:#041000;font-weight:700;font-size:15px;text-decoration:none;display:inline-flex;gap:8px;box-shadow:0 12px 36px rgba(124,255,57,.4);transition:.25s}
+  .band .btn:hover{background:var(--accent);transform:translateY(-2px) scale(1.03)}
+  .siteftr{position:relative;z-index:2;text-align:center;font-size:11.5px;color:rgba(255,255,255,.5);padding:0 20px 34px}
+  .siteftr i{color:var(--green);font-style:normal}
 </style>
 
 <div class="aura"></div>
@@ -87,7 +121,7 @@
     </div>
   </main>
 
-  <div class="marquee" id="serv">
+  <div class="marquee">
     <div class="track">
       <span class="pill">🎯 Tráfego Pago</span><span class="pill">📈 Estratégia de Marketing</span><span class="pill">🌐 Sites Profissionais</span><span class="pill">📱 Landing Pages</span><span class="pill">📲 Aplicativos</span><span class="pill">🎨 Branding</span><span class="pill">📖 Brand Book</span><span class="pill">🖨 Material PDV</span><span class="pill">💳 Ponto Digital</span><span class="pill">🍽 Sistema Garçom</span><span class="pill">🕵 Rastreador</span><span class="pill">💼 Currículos</span><span class="pill">🤖 Automações IA</span><span class="pill">⚙ Sistemas Empresariais</span>
       <span class="pill">🎯 Tráfego Pago</span><span class="pill">📈 Estratégia de Marketing</span><span class="pill">🌐 Sites Profissionais</span><span class="pill">📱 Landing Pages</span><span class="pill">📲 Aplicativos</span><span class="pill">🎨 Branding</span><span class="pill">📖 Brand Book</span><span class="pill">🖨 Material PDV</span><span class="pill">💳 Ponto Digital</span><span class="pill">🍽 Sistema Garçom</span><span class="pill">🕵 Rastreador</span><span class="pill">💼 Currículos</span><span class="pill">🤖 Automações IA</span><span class="pill">⚙ Sistemas Empresariais</span>
@@ -99,5 +133,77 @@
     <div class="stat headfont"><b>98%</b><span>Satisfação</span></div>
     <div class="stat headfont"><b>+5M</b><span>Em vendas geradas</span></div>
   </div>
-  <div class="foot">© 2026 DOS REIS SOLUÇÕES DIGITAIS · <i>Marketing • Tecnologia • Inteligência Artificial</i></div>
 </div>
+
+<main class="content">
+  <section class="sec2" id="serv">
+    <span class="eye">Pra quem é</span>
+    <h2>Você não precisa entender de tecnologia.<br>Precisa <span style="color:var(--green)">vender mais.</span></h2>
+    <p class="lead">Se você tem um comércio, loja, restaurante, oficina ou presta serviço, este conteúdo é pra você. Sem palavra difícil: só o que realmente faz o cliente te encontrar e comprar.</p>
+    <div class="g2">
+      <div class="tcard">
+        <div class="ic">🎯</div>
+        <h3>O que é tráfego pago?</h3>
+        <p>É colocar um anúncio no Google ou no Instagram pra aparecer na frente de quem <b>já está procurando</b> o que você vende. Você define quanto quer investir por dia e paga por resultado (cliques e visitas), não por "sorte". É como abrir sua loja na rua mais movimentada da cidade — só que online.</p>
+        <div class="res">→ Resultado: cliente novo chegando todo dia, com custo previsível.</div>
+      </div>
+      <div class="tcard">
+        <div class="ic">🔎</div>
+        <h3>Como fazer sua empresa aparecer no Google?</h3>
+        <p>Três frentes: o <b>Google Meu Negócio</b> (perfil gratuito que te põe no mapa e nas buscas locais), o <b>SEO</b> (seu site organizado pra o Google confiar e ranquear você) e o <b>Google Ads</b> (aparecer no topo na hora, pagando por clique). Junte os três e você domina a busca da sua região.</p>
+        <div class="res">→ Resultado: quando alguém buscar seu serviço na cidade, é você que aparece.</div>
+      </div>
+      <div class="tcard">
+        <div class="ic">🌐</div>
+        <h3>Por que ter um site que vende?</h3>
+        <p>Rede social é alugada — o site é seu. Uma página profissional passa confiança, funciona 24h, tira dúvidas e leva o cliente direto pro WhatsApp ou pro carrinho. Sem site bom, todo o dinheiro de anúncio escorre pelo ralo.</p>
+        <div class="res">→ Resultado: mais gente que clica vira gente que compra.</div>
+      </div>
+      <div class="tcard">
+        <div class="ic">🤖</div>
+        <h3>Automação e IA no atendimento</h3>
+        <p>Um robô inteligente responde na hora, qualifica o cliente, manda orçamento e agenda — mesmo às 23h ou no domingo. Você para de perder venda por demora e a sua equipe cuida só de quem está pronto pra fechar.</p>
+        <div class="res">→ Resultado: nenhum cliente esperando, nenhuma venda perdida.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec2">
+    <span class="eye">Passo a passo</span>
+    <h2>Como aparecer no Google (na prática)</h2>
+    <p class="lead">A ordem que a gente recomenda pra qualquer pequeno negócio começar a ser encontrado:</p>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><div><h4>Crie o Google Meu Negócio</h4><p>Gratuito. Coloca sua empresa no mapa, mostra horário, telefone, fotos e avaliações. É o primeiro lugar onde o cliente da sua região vai te achar.</p></div></div>
+      <div class="step"><div class="n">2</div><div><h4>Tenha um site enxuto e rápido</h4><p>Uma página que carrega rápido, funciona no celular e leva pro WhatsApp. O Google prioriza quem tem presença própria e organizada.</p></div></div>
+      <div class="step"><div class="n">3</div><div><h4>Ligue anúncios (Google Ads)</h4><p>Enquanto o resultado orgânico cresce, o anúncio te coloca no topo na hora. Começa pequeno, mede o retorno e escala o que dá lucro.</p></div></div>
+      <div class="step"><div class="n">4</div><div><h4>Peça avaliações de verdade</h4><p>Cliente satisfeito avaliando com 5 estrelas sobe sua posição e convence o próximo. É de graça e vale ouro.</p></div></div>
+    </div>
+  </section>
+
+  <section class="sec2">
+    <span class="eye">Como a gente trabalha</span>
+    <h2>Do zero ao resultado em 3 passos</h2>
+    <div class="steps">
+      <div class="step"><div class="n">A</div><div><h4>Diagnóstico</h4><p>Entendemos seu negócio, seu público e onde estão os furos que estão fazendo você perder venda.</p></div></div>
+      <div class="step"><div class="n">B</div><div><h4>Estratégia</h4><p>Montamos o plano — anúncios, site, Google, automação — focado no que traz retorno pro SEU tipo de negócio.</p></div></div>
+      <div class="step"><div class="n">C</div><div><h4>Execução & otimização</h4><p>Colocamos no ar, acompanhamos os números e ajustamos toda semana pra cada real investido render mais.</p></div></div>
+    </div>
+  </section>
+
+  <section class="sec2">
+    <span class="eye">Dúvidas comuns</span>
+    <h2>O que todo comerciante pergunta</h2>
+    <details class="qa"><summary>Preciso gastar muito pra começar?</summary><p>Não. Dá pra começar com um investimento pequeno em anúncio, medir o retorno e só aumentar o que estiver dando lucro. A gente monta pra caber no seu bolso.</p></details>
+    <details class="qa"><summary>Em quanto tempo vejo resultado?</summary><p>Anúncio traz visita já nos primeiros dias. Presença no Google e reputação crescem em algumas semanas. A gente acompanha os números com você desde o primeiro dia.</p></details>
+    <details class="qa"><summary>Serve pro meu tipo de negócio?</summary><p>Sim. Loja, restaurante, oficina, clínica, prestador de serviço — o que muda é a estratégia. O objetivo é sempre o mesmo: mais cliente e mais venda.</p></details>
+    <details class="qa"><summary>Eu vou precisar mexer em tecnologia?</summary><p>Não. A gente cuida de tudo — anúncio, site, Google, automação. Você foca no seu negócio e recebe os clientes.</p></details>
+  </section>
+</main>
+
+<div class="band">
+  <h2 class="headfont">Bora fazer seu negócio <span style="color:var(--green)">aparecer e vender?</span></h2>
+  <p>Fale com a gente agora e receba um diagnóstico gratuito do seu negócio.</p>
+  <a class="btn" href="https://wa.me/5519988013439?text=Ol%C3%A1!%20Quero%20um%20diagn%C3%B3stico%20gratuito%20com%20a%20DOS%20REIS." target="_blank" rel="noopener">QUERO MEU DIAGNÓSTICO →</a>
+</div>
+
+<footer class="siteftr">© 2026 DOS REIS SOLUÇÕES DIGITAIS · <i>Marketing • Tecnologia • Inteligência Artificial</i></footer>
