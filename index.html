@@ -120,6 +120,50 @@
   .mini-btn{display:inline-block;background:var(--green);color:#041000;font-weight:700;font-size:13px;padding:11px 26px;border-radius:999px;box-shadow:0 10px 30px rgba(124,255,57,.35)}
   .mini-cards{display:flex;gap:12px;justify-content:center;margin-top:26px;flex-wrap:wrap}
   .mini-cards span{width:96px;height:62px;border-radius:10px;background:linear-gradient(145deg,rgba(124,255,57,.14),rgba(255,255,255,.04));border:1px solid var(--border)}
+  /* nichos atendidos */
+  .bizgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:640px){.bizgrid{grid-template-columns:1fr 1fr}}
+  .bizgrid figure{position:relative;margin:0;aspect-ratio:4/3;border-radius:16px;overflow:hidden;border:1px solid var(--border)}
+  .bizgrid img{width:100%;height:100%;object-fit:cover;transition:.45s}
+  .bizgrid figure:hover img{transform:scale(1.08)}
+  .bizgrid figcaption{position:absolute;left:0;right:0;bottom:0;padding:12px 14px;font-family:'Arial Narrow','Helvetica Neue',Impact,sans-serif;text-transform:uppercase;letter-spacing:.02em;font-weight:700;font-size:16px;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.85))}
+  /* google maps */
+  .maps{max-width:620px;margin:6px auto 0;border-radius:18px;overflow:hidden;border:1px solid var(--border);box-shadow:0 26px 64px rgba(0,0,0,.55)}
+  .map-canvas{position:relative;height:300px;overflow:hidden}
+  .map-canvas .roads{position:absolute;inset:0;width:100%;height:100%}
+  .map-pin{position:absolute;left:50%;top:48%;transform:translate(-50%,-100%);z-index:3;display:flex;flex-direction:column;align-items:center;animation:pindrop 2.6s ease-in-out infinite}
+  .map-balloon{background:#fff;color:#111;font-weight:700;font-size:13px;padding:7px 12px;border-radius:10px;white-space:nowrap;box-shadow:0 10px 22px rgba(0,0,0,.45);margin-bottom:5px}
+  .map-balloon b{color:#E6A800;margin-left:4px}
+  .map-badge{position:absolute;top:12px;left:12px;z-index:3;background:#fff;border-radius:8px;padding:5px 10px;font-size:11px;font-weight:600;color:#333;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+  .map-info{display:flex;align-items:center;gap:12px;padding:14px 18px;background:#0f150f;border-top:1px solid var(--border)}
+  .map-info .mi-pin{height:34px;width:34px;border-radius:9px;background:var(--green);display:grid;place-items:center;color:#041000;font-weight:800;flex:none}
+  .map-info b{font-size:15px;display:block}.map-info span{font-size:12px;color:var(--text-2)}
+  .map-info .mi-star{margin-left:auto;color:#E6A800;font-weight:700;font-size:13px}
+  @keyframes pindrop{0%,100%{transform:translate(-50%,-100%)}50%{transform:translate(-50%,-114%)}}
+  /* sites criados */
+  .sitesgal{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media(max-width:720px){.sitesgal{grid-template-columns:1fr}}
+  .sitecard{margin:0;border-radius:14px;overflow:hidden;border:1px solid var(--border);background:#0a0f0a;box-shadow:0 20px 50px rgba(0,0,0,.5);transition:.3s}
+  .sitecard:hover{transform:translateY(-6px);border-color:rgba(124,255,57,.4)}
+  .bbar2{display:flex;gap:6px;padding:9px 12px;background:#0f150f;border-bottom:1px solid var(--border)}
+  .bbar2 i{width:9px;height:9px;border-radius:50%}
+  .bbar2 i:nth-child(1){background:#ff5f56}.bbar2 i:nth-child(2){background:#ffbd2e}.bbar2 i:nth-child(3){background:#27c93f}
+  .sitecard img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block}
+  .sitecard figcaption{padding:12px 14px;font-size:13px;font-weight:600;color:#fff}
+  /* resultados com rostos */
+  .results{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  @media(max-width:640px){.results{grid-template-columns:1fr}}
+  .rcard{display:flex;gap:14px;align-items:center;background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:16px;transition:.25s}
+  .rcard:hover{border-color:rgba(124,255,57,.4);transform:translateY(-3px)}
+  .rcard img{width:58px;height:58px;border-radius:50%;object-fit:cover;border:2px solid rgba(124,255,57,.45);flex:none}
+  .rcard b{display:block;font-size:15px}
+  .rcard .rs{display:block;font-size:12px;color:var(--text-2);margin:2px 0 5px}
+  .rcard em{font-style:normal;font-weight:700;color:var(--green);font-size:14px}
+  /* cardapio de servicos */
+  .menu{max-width:660px;margin:8px auto 0;display:grid;gap:0}
+  .mitem{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:15px 4px;border-bottom:1px dashed var(--border)}
+  .mitem .mn{font-family:'Arial Narrow','Helvetica Neue',Impact,sans-serif;text-transform:uppercase;letter-spacing:.02em;font-weight:700;font-size:20px;white-space:nowrap}
+  .mitem .md{color:var(--text-2);font-size:13px;text-align:right}
 </style>
 
 <div class="aura"></div>
@@ -174,8 +218,8 @@
 
   <section class="sec2">
     <span class="eye">Portfólio</span>
-    <h2>Sites e landing pages que <span style="color:var(--green)">vendem.</span></h2>
-    <p class="lead">Não é só bonito — é feito pra converter. Um exemplo do que entregamos:</p>
+    <h2>Sites que <span style="color:var(--green)">criamos e vendem.</span></h2>
+    <p class="lead">Cada negócio com a cara dele, feito pra converter — no computador e no celular.</p>
     <div class="browser">
       <div class="bbar"><i></i><i></i><i></i><div class="burl">🔒 seunegocio.com.br</div></div>
       <div class="bscreen">
@@ -184,6 +228,62 @@
         <div class="mini-sub">Presença profissional que transforma visita em cliente — no computador e no celular.</div>
         <div class="mini-btn">Fale conosco</div>
         <div class="mini-cards"><span></span><span></span><span></span></div>
+      </div>
+    </div>
+    <div class="sitesgal" style="margin-top:22px">
+      <figure class="sitecard"><div class="bbar2"><i></i><i></i><i></i></div><img src="img/restaurante.jpg" alt="Site de restaurante" loading="lazy"><figcaption>Restaurante · Cardápio + Delivery</figcaption></figure>
+      <figure class="sitecard"><div class="bbar2"><i></i><i></i><i></i></div><img src="img/loja.jpg" alt="Site de loja" loading="lazy"><figcaption>Loja · Catálogo + E-commerce</figcaption></figure>
+      <figure class="sitecard"><div class="bbar2"><i></i><i></i><i></i></div><img src="img/construcao.jpg" alt="Site de serviços" loading="lazy"><figcaption>Serviços · Site + Orçamento</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="sec2">
+    <span class="eye">Resultados reais</span>
+    <h2>O que a gente faz <span style="color:var(--green)">acontecer.</span></h2>
+    <div class="results">
+      <div class="rcard"><img src="img/face1.jpg" alt="" loading="lazy"><div><b>Carlos — Distribuidora</b><span class="rs">Tráfego pago + Site</span><em>+42% em pedidos</em></div></div>
+      <div class="rcard"><img src="img/face2.jpg" alt="" loading="lazy"><div><b>Marina — Restaurante</b><span class="rs">Delivery + Google</span><em>+60% em vendas</em></div></div>
+      <div class="rcard"><img src="img/face3.jpg" alt="" loading="lazy"><div><b>Rafael — Materiais</b><span class="rs">Landing page + Ads</span><em>+35 orçamentos/mês</em></div></div>
+      <div class="rcard"><img src="img/face4.jpg" alt="" loading="lazy"><div><b>Juliana — Loja</b><span class="rs">Instagram + Loja online</span><em>2x faturamento</em></div></div>
+    </div>
+  </section>
+
+  <section class="sec2">
+    <span class="eye">Pra quem trabalhamos</span>
+    <h2>Atendemos negócios <span style="color:var(--green)">como o seu.</span></h2>
+    <div class="bizgrid">
+      <figure><img src="img/restaurante.jpg" alt="Restaurantes" loading="lazy"><figcaption>Restaurantes</figcaption></figure>
+      <figure><img src="img/bebidas.jpg" alt="Distribuidoras" loading="lazy"><figcaption>Distribuidoras</figcaption></figure>
+      <figure><img src="img/construcao.jpg" alt="Materiais de construção" loading="lazy"><figcaption>Materiais de construção</figcaption></figure>
+      <figure><img src="img/mercado.jpg" alt="Mercados" loading="lazy"><figcaption>Mercados</figcaption></figure>
+      <figure><img src="img/oficina.jpg" alt="Oficinas" loading="lazy"><figcaption>Oficinas &amp; serviços</figcaption></figure>
+      <figure><img src="img/loja.jpg" alt="Lojas" loading="lazy"><figcaption>Lojas &amp; comércio</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="sec2">
+    <span class="eye">Presença local</span>
+    <h2>No topo do <span style="color:var(--green)">Google Maps</span> da sua cidade.</h2>
+    <p class="lead">Quando buscarem seu serviço na região, é o seu negócio que aparece — com nota, fotos e o caminho até você.</p>
+    <div class="maps">
+      <div class="map-canvas">
+        <svg class="roads" viewBox="0 0 620 300" preserveAspectRatio="xMidYMid slice">
+          <rect width="620" height="300" fill="#0c130c"/>
+          <rect x="360" y="24" width="210" height="76" rx="10" fill="#12241a"/>
+          <circle cx="60" cy="252" r="48" fill="#0e2233"/>
+          <path d="M0 96 H620 M0 214 H620 M132 0 V300 M330 0 V300 M496 0 V300" stroke="#212c21" stroke-width="18"/>
+          <path d="M0 96 H620 M0 214 H620 M132 0 V300 M330 0 V300 M496 0 V300" stroke="#2c3a2c" stroke-width="2" stroke-dasharray="9 9"/>
+        </svg>
+        <div class="map-badge">Google Maps</div>
+        <div class="map-pin">
+          <div class="map-balloon">DOS REIS <b>★ 5,0</b></div>
+          <svg width="40" height="40" viewBox="0 0 24 24"><path fill="#7CFF39" d="M12 2C7.6 2 4 5.6 4 10c0 5.2 7 12 8 12s8-6.8 8-12c0-4.4-3.6-8-8-8z"/><circle cx="12" cy="10" r="3" fill="#0a140a"/></svg>
+        </div>
+      </div>
+      <div class="map-info">
+        <div class="mi-pin">DR</div>
+        <div><b>DOS REIS Soluções Digitais</b><span>Agência de Marketing · Aberto agora</span></div>
+        <span class="mi-star">★ 5,0</span>
       </div>
     </div>
   </section>
@@ -217,6 +317,21 @@
         <p>Um robô inteligente responde na hora, qualifica o cliente, manda orçamento e agenda — mesmo às 23h ou no domingo. Você para de perder venda por demora e a sua equipe cuida só de quem está pronto pra fechar.</p>
         <div class="res">→ Resultado: nenhum cliente esperando, nenhuma venda perdida.</div>
       </div>
+    </div>
+  </section>
+
+  <section class="sec2">
+    <span class="eye">Cardápio de serviços</span>
+    <h2>Escolha o que seu negócio <span style="color:var(--green)">precisa.</span></h2>
+    <div class="menu">
+      <div class="mitem"><span class="mn">Tráfego Pago</span><span class="md">Anúncios no Google e Instagram</span></div>
+      <div class="mitem"><span class="mn">Sites &amp; Landing Pages</span><span class="md">Presença que converte visita em cliente</span></div>
+      <div class="mitem"><span class="mn">Google Meu Negócio</span><span class="md">Apareça no Maps da sua região</span></div>
+      <div class="mitem"><span class="mn">Branding &amp; Brand Book</span><span class="md">Identidade visual profissional</span></div>
+      <div class="mitem"><span class="mn">Aplicativos</span><span class="md">App próprio da sua marca</span></div>
+      <div class="mitem"><span class="mn">Automação &amp; IA</span><span class="md">Atendimento que vende 24h</span></div>
+      <div class="mitem"><span class="mn">Redes Sociais</span><span class="md">Conteúdo e gestão que engaja</span></div>
+      <div class="mitem"><span class="mn">Sistemas Empresariais</span><span class="md">PDV, ponto digital, garçom e mais</span></div>
     </div>
   </section>
 
