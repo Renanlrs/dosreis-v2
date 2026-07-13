@@ -181,11 +181,19 @@
   .btn.primary::after,.band .btn::after{content:'';position:absolute;top:0;left:-60%;width:38%;height:100%;background:linear-gradient(120deg,transparent,rgba(255,255,255,.5),transparent);transform:skewX(-20deg);animation:shine 3.6s ease-in-out infinite;pointer-events:none}
   @keyframes shine{0%{left:-60%}45%,100%{left:135%}}
   .rcard:hover,.sitecard:hover,.bizgrid figure:hover,.tcard:hover{box-shadow:0 20px 46px rgba(124,255,57,.16)}
+  /* impacto */
+  #fx{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.75}
+  .spotlight{position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(360px circle at var(--mx,50%) var(--my,22%),rgba(124,255,57,.11),transparent 62%);transition:opacity .3s}
+  .reveal{transform:translateY(44px) scale(.975)}
+  .reveal.in{transform:none}
+  .hero-logo{will-change:transform}
   @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.btn.primary,.floatcta,.btn.primary::after,.band .btn::after{animation:none}}
 </style>
 
 <div class="aura"></div>
 <div class="grid-fade"></div>
+<canvas id="fx"></canvas>
+<div class="spotlight"></div>
 
 <div class="shell">
   <div style="height:clamp(24px,5vh,52px)"></div>
@@ -416,5 +424,42 @@
     requestAnimationFrame(step);
   }
   document.querySelectorAll('.stat b').forEach(countUp);
+
+  // holofote seguindo o mouse
+  var root=document.documentElement;
+  window.addEventListener('mousemove', function(e){
+    root.style.setProperty('--mx', e.clientX+'px');
+    root.style.setProperty('--my', e.clientY+'px');
+  }, { passive:true });
+
+  // leve parallax no logo do hero
+  var hlogo=document.querySelector('.hero-logo');
+  window.addEventListener('scroll', function(){
+    if(hlogo) hlogo.style.transform='translateY('+(window.scrollY*0.12)+'px)';
+  }, { passive:true });
+
+  // canvas de particulas em rede
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var cv=document.getElementById('fx');
+  if(cv && !reduce){
+    var cx=cv.getContext('2d'), W, H, pts;
+    function resize(){ W=cv.width=window.innerWidth; H=cv.height=window.innerHeight;
+      var n=Math.min(80, Math.floor(W*H/16000));
+      pts=[]; for(var i=0;i<n;i++){ pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35}); }
+    }
+    resize(); window.addEventListener('resize', resize);
+    function draw(){
+      cx.clearRect(0,0,W,H);
+      for(var i=0;i<pts.length;i++){ var p=pts[i]; p.x+=p.vx; p.y+=p.vy;
+        if(p.x<0||p.x>W)p.vx*=-1; if(p.y<0||p.y>H)p.vy*=-1;
+        cx.fillStyle='rgba(124,255,57,.55)'; cx.beginPath(); cx.arc(p.x,p.y,1.5,0,6.3); cx.fill();
+        for(var j=i+1;j<pts.length;j++){ var q=pts[j], dx=p.x-q.x, dy=p.y-q.y, d=dx*dx+dy*dy;
+          if(d<15000){ var a=.16*(1-d/15000); cx.strokeStyle='rgba(124,255,57,'+a+')'; cx.lineWidth=1;
+            cx.beginPath(); cx.moveTo(p.x,p.y); cx.lineTo(q.x,q.y); cx.stroke(); } }
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+  }
 })();
 </script>
