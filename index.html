@@ -164,16 +164,25 @@
   .mitem{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:15px 4px;border-bottom:1px dashed var(--border)}
   .mitem .mn{font-family:'Arial Narrow','Helvetica Neue',Impact,sans-serif;text-transform:uppercase;letter-spacing:.02em;font-weight:700;font-size:20px;white-space:nowrap}
   .mitem .md{color:var(--text-2);font-size:13px;text-align:right}
+  /* CTA pulsante */
+  .btn.primary{animation:ctaPulse 2.4s ease-in-out infinite}
+  @keyframes ctaPulse{0%,100%{box-shadow:0 10px 30px rgba(124,255,57,.35)}50%{box-shadow:0 12px 46px rgba(124,255,57,.75),0 0 0 7px rgba(124,255,57,.12)}}
+  /* aparecer ao rolar */
+  .reveal{opacity:0;transform:translateY(36px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
+  .reveal.in{opacity:1;transform:none}
+  /* CTA flutuante */
+  .floatcta{position:fixed;right:18px;bottom:18px;z-index:120;display:inline-flex;align-items:center;gap:9px;padding:15px 26px;border-radius:999px;background:var(--green);color:#041000;font-weight:800;font-size:15px;text-decoration:none;box-shadow:0 16px 44px rgba(124,255,57,.55);opacity:0;transform:translateY(28px) scale(.9);pointer-events:none;transition:opacity .45s,transform .45s cubic-bezier(.22,1,.36,1)}
+  .floatcta.show{opacity:1;transform:none;pointer-events:auto;animation:floatBob 2.2s ease-in-out infinite}
+  .floatcta:hover{background:var(--accent);transform:translateY(-3px) scale(1.04)}
+  @keyframes floatBob{0%,100%{translate:0 0}50%{translate:0 -7px}}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.btn.primary,.floatcta{animation:none}}
 </style>
 
 <div class="aura"></div>
 <div class="grid-fade"></div>
 
 <div class="shell">
-  <nav>
-    <span class="n-word">DOS REIS<small>SOLU&Ccedil;&Otilde;ES DIGITAIS</small></span>
-    <a class="n-cta" href="https://wa.me/5519988013439?text=Ol%C3%A1!%20Quero%20conhecer%20as%20solu%C3%A7%C3%B5es%20da%20Dos%20Reis." target="_blank" rel="noopener">💬 Fale Conosco</a>
-  </nav>
+  <div style="height:clamp(24px,5vh,52px)"></div>
 
   <main>
     <div class="hero-logo">
@@ -374,3 +383,18 @@
 </div>
 
 <footer class="siteftr">© 2026 DOS REIS SOLUÇÕES DIGITAIS · <i>Marketing • Tecnologia • Inteligência Artificial</i></footer>
+
+<a class="floatcta" href="https://wa.me/5519988013439?text=Ol%C3%A1!%20Quero%20crescer%20com%20a%20DOS%20REIS." target="_blank" rel="noopener">🚀 Quero crescer</a>
+
+<script>
+(function(){
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+  document.querySelectorAll('.sec2, .band, .trust').forEach(function(el){ el.classList.add('reveal'); io.observe(el); });
+  var fc = document.querySelector('.floatcta');
+  function onScroll(){ if(fc) fc.classList.toggle('show', window.scrollY > 520); }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+</script>
