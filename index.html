@@ -184,6 +184,13 @@
   /* impacto */
   #fx{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.6}
   #three-fx{position:absolute;top:0;left:0;width:100%;height:100vh;z-index:1;pointer-events:none;opacity:.85}
+  .handbtn{margin-top:16px;display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(124,255,57,.45);color:#fff;font-weight:600;font-size:13px;cursor:pointer;transition:.25s;opacity:0;animation:fu .9s 1s forwards}
+  .handbtn:hover{background:rgba(124,255,57,.14);transform:translateY(-2px)}
+  .handbtn.active{background:var(--green);color:#041000;border-color:var(--green)}
+  #handCam{position:fixed;left:16px;bottom:16px;width:190px;height:auto;border-radius:14px;border:2px solid var(--green);box-shadow:0 14px 34px rgba(0,0,0,.55),0 0 22px rgba(124,255,57,.3);transform:scaleX(-1);z-index:130;display:none}
+  #handCam.on{display:block}
+  .handhint{position:fixed;left:16px;bottom:172px;z-index:130;background:rgba(0,0,0,.72);color:#fff;font-size:11.5px;padding:7px 11px;border-radius:9px;max-width:190px;display:none}
+  .handhint.on{display:block}
   .spotlight{position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(360px circle at var(--mx,50%) var(--my,22%),rgba(124,255,57,.11),transparent 62%);transition:opacity .3s}
   .reveal{transform:translateY(44px) scale(.975)}
   .reveal.in{transform:none}
@@ -229,6 +236,7 @@
       <a class="btn primary" href="https://wa.me/5519988013439?text=Ol%C3%A1!%20Quero%20transformar%20meu%20neg%C3%B3cio%20com%20a%20DOS%20REIS." target="_blank" rel="noopener">QUERO CRESCER →</a>
       <a class="btn ghost" href="#serv">Ver serviços</a>
     </div>
+    <button id="handBtn" class="handbtn" type="button">🖐️ Mover as partículas com as mãos</button>
   </main>
 
   <div class="marquee">
@@ -422,6 +430,8 @@
 <footer class="siteftr">© 2026 DOS REIS SOLUÇÕES DIGITAIS · <i>Marketing • Tecnologia • Inteligência Artificial</i></footer>
 
 <a class="floatcta" href="https://wa.me/5519988013439?text=Ol%C3%A1!%20Quero%20crescer%20com%20a%20DOS%20REIS." target="_blank" rel="noopener">🚀 Quero crescer</a>
+<video id="handCam" playsinline muted></video>
+<div class="handhint" id="handHint"></div>
 
 <script>
 (function(){
@@ -515,13 +525,66 @@
   window.addEventListener('mousemove', function(e){ mx=(e.clientX/window.innerWidth-.5); my=(e.clientY/window.innerHeight-.5); }, { passive:true });
   window.addEventListener('resize', function(){ W=window.innerWidth; H=window.innerHeight; cam.aspect=W/H; cam.updateProjectionMatrix(); renderer.setSize(W,H); });
   function anim(){
-    cloud.rotation.y += 0.0016; cloud.rotation.x += 0.0007;
-    cam.position.x += (mx*150 - cam.position.x)*0.045;
-    cam.position.y += (-my*150 - cam.position.y)*0.045;
+    var hnd = window.__hand, on = hnd && hnd.active;
+    var tx = on ? hnd.x*200 : mx*150;
+    var ty = on ? -hnd.y*200 : -my*150;
+    cam.position.x += (tx - cam.position.x)*0.06;
+    cam.position.y += (ty - cam.position.y)*0.06;
+    var ts = (on && hnd.scale) ? hnd.scale : 1;
+    cloud.scale.setScalar(cloud.scale.x + (ts - cloud.scale.x)*0.1);
+    cloud.rotation.y += on ? 0.004 : 0.0016;
+    cloud.rotation.x += 0.0007;
     cam.lookAt(scene.position);
     renderer.render(scene, cam);
     requestAnimationFrame(anim);
   }
   anim();
+})();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+<script>
+(function(){
+  var btn=document.getElementById('handBtn'),
+      cam=document.getElementById('handCam'),
+      hint=document.getElementById('handHint');
+  if(!btn) return;
+  window.__hand={x:0,y:0,active:false,scale:1};
+  var started=false, camera=null;
+  function d(a,b){var x=a.x-b.x,y=a.y-b.y,z=(a.z||0)-(b.z||0);return Math.sqrt(x*x+y*y+z*z);}
+  function onResults(r){
+    if(r.multiHandLandmarks && r.multiHandLandmarks.length){
+      var lm=r.multiHandLandmarks[0], palm=lm[9];
+      window.__hand.x = (0.5 - palm.x);
+      window.__hand.y = (palm.y - 0.5);
+      var open = d(lm[0],lm[12]) / (d(lm[0],lm[5]) + 0.0001);
+      window.__hand.scale = Math.max(0.55, Math.min(2.2, open*0.85));
+      window.__hand.active = true;
+      if(hint) hint.textContent='✋ Mexa a mão pra mover as partículas';
+    } else {
+      window.__hand.active=false;
+      if(hint) hint.textContent='Mostre a mão pra câmera...';
+    }
+  }
+  function stop(){
+    try{ if(camera && camera.stop) camera.stop(); }catch(e){}
+    if(cam && cam.srcObject){ cam.srcObject.getTracks().forEach(function(t){t.stop();}); cam.srcObject=null; }
+    if(cam) cam.classList.remove('on'); if(hint) hint.classList.remove('on');
+    btn.classList.remove('active'); btn.textContent='🖐️ Mover as partículas com as mãos';
+    window.__hand.active=false; started=false;
+  }
+  btn.addEventListener('click', function(){
+    if(started){ stop(); return; }
+    if(!window.Hands || !window.Camera){ alert('Não consegui carregar o rastreamento de mãos. Verifique sua conexão e tente novamente.'); return; }
+    var hands=new Hands({locateFile:function(f){return 'https://cdn.jsdelivr.net/npm/@mediapipe/hands/'+f;}});
+    hands.setOptions({maxNumHands:1, modelComplexity:0, minDetectionConfidence:.6, minTrackingConfidence:.6});
+    hands.onResults(onResults);
+    camera=new Camera(cam, { onFrame: async function(){ try{ await hands.send({image:cam}); }catch(e){} }, width:640, height:480 });
+    var p;
+    try{ p=camera.start(); }catch(e){ alert('Permita o acesso à câmera para usar as mãos.'); return; }
+    var ok=function(){ cam.classList.add('on'); if(hint){hint.classList.add('on');hint.textContent='Mostre a mão pra câmera...';} btn.classList.add('active'); btn.textContent='✋ Parar câmera'; started=true; };
+    if(p && p.then){ p.then(ok).catch(function(){ alert('Permita o acesso à câmera para controlar com as mãos.'); }); } else { ok(); }
+  });
 })();
 </script>
