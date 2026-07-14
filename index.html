@@ -184,12 +184,12 @@
   /* impacto */
   #fx{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.6}
   #three-fx{position:absolute;top:0;left:0;width:100%;height:100vh;z-index:1;pointer-events:none;opacity:.85}
-  .handbtn{margin-top:16px;display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(124,255,57,.45);color:#fff;font-weight:600;font-size:13px;cursor:pointer;transition:.25s;opacity:0;animation:fu .9s 1s forwards}
-  .handbtn:hover{background:rgba(124,255,57,.14);transform:translateY(-2px)}
-  .handbtn.active{background:var(--green);color:#041000;border-color:var(--green)}
-  #handCam{position:fixed;left:16px;bottom:16px;width:190px;height:auto;border-radius:14px;border:2px solid var(--green);box-shadow:0 14px 34px rgba(0,0,0,.55),0 0 22px rgba(124,255,57,.3);transform:scaleX(-1);z-index:130;display:none}
-  #handCam.on{display:block}
-  .handhint{position:fixed;left:16px;bottom:172px;z-index:130;background:rgba(0,0,0,.72);color:#fff;font-size:11.5px;padding:7px 11px;border-radius:9px;max-width:190px;display:none}
+  .handbtn{width:54px;height:54px;padding:0;border-radius:50%;display:inline-grid;place-items:center;background:rgba(255,255,255,.05);border:1px solid rgba(124,255,57,.5);cursor:pointer;transition:.25s;box-shadow:0 0 20px rgba(124,255,57,.2);opacity:0;animation:fu .9s 1s forwards;flex:none}
+  .handbtn img{width:36px;height:36px;object-fit:contain;pointer-events:none}
+  .handbtn:hover{background:rgba(124,255,57,.14);transform:translateY(-2px) scale(1.06);box-shadow:0 0 30px rgba(124,255,57,.45)}
+  .handbtn.active{background:var(--green);border-color:var(--green);box-shadow:0 0 36px rgba(124,255,57,.6)}
+  #handCam{position:fixed;left:0;bottom:0;width:2px;height:2px;opacity:0;pointer-events:none;z-index:-1}
+  .handhint{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:130;background:rgba(0,0,0,.8);color:#fff;font-size:12px;padding:9px 15px;border-radius:999px;max-width:90vw;text-align:center;display:none}
   .handhint.on{display:block}
   .spotlight{position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(360px circle at var(--mx,50%) var(--my,22%),rgba(124,255,57,.11),transparent 62%);transition:opacity .3s}
   .reveal{transform:translateY(44px) scale(.975)}
@@ -235,8 +235,8 @@
     <div class="cta">
       <a class="btn primary" href="https://wa.me/5519988013439?text=Ol%C3%A1!%20Quero%20transformar%20meu%20neg%C3%B3cio%20com%20a%20DOS%20REIS." target="_blank" rel="noopener">QUERO CRESCER →</a>
       <a class="btn ghost" href="#serv">Ver serviços</a>
+      <button id="handBtn" class="handbtn" type="button" title="Controlar as partículas com as mãos"><img src="img/logo.png" alt="Controlar com as mãos"></button>
     </div>
-    <button id="handBtn" class="handbtn" type="button">🖐️ Mover as partículas com as mãos</button>
   </main>
 
   <div class="marquee">
@@ -503,37 +503,51 @@
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var cv = document.getElementById('three-fx');
   if(!window.THREE || !cv || reduce){ if(cv) cv.style.display='none'; return; }
-  var W = window.innerWidth, H = window.innerHeight;
-  var scene = new THREE.Scene();
-  var cam = new THREE.PerspectiveCamera(60, W/H, 1, 2000); cam.position.z = 360;
+  var W=window.innerWidth, H=window.innerHeight;
+  var scene=new THREE.Scene();
+  var cam=new THREE.PerspectiveCamera(60, W/H, 1, 3000); cam.position.z=440;
   var renderer;
-  try { renderer = new THREE.WebGLRenderer({ canvas: cv, alpha: true, antialias: true }); }
+  try{ renderer=new THREE.WebGLRenderer({canvas:cv, alpha:true, antialias:true}); }
   catch(e){ cv.style.display='none'; return; }
-  renderer.setSize(W, H); renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  var N = W < 680 ? 1500 : 2800;
-  var geo = new THREE.BufferGeometry(), pos = new Float32Array(N*3);
-  for(var i=0;i<N;i++){
-    var r = 150 + Math.random()*30, th = Math.random()*Math.PI*2, ph = Math.acos(2*Math.random()-1);
-    pos[i*3]   = r*Math.sin(ph)*Math.cos(th);
-    pos[i*3+1] = r*Math.sin(ph)*Math.sin(th);
-    pos[i*3+2] = r*Math.cos(ph);
-  }
-  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-  var mat = new THREE.PointsMaterial({ color: 0x7CFF39, size: 1.7, transparent: true, opacity: 0.9, sizeAttenuation: true });
-  var cloud = new THREE.Points(geo, mat); scene.add(cloud);
-  var mx=0, my=0;
-  window.addEventListener('mousemove', function(e){ mx=(e.clientX/window.innerWidth-.5); my=(e.clientY/window.innerHeight-.5); }, { passive:true });
+  renderer.setSize(W,H); renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  var N = W<680 ? 1600 : 3200;
+  var rnd=Math.random;
+  function sphere(){var a=new Float32Array(N*3);for(var i=0;i<N;i++){var t=i/N,inc=Math.acos(1-2*t),az=Math.PI*(1+Math.sqrt(5))*i,r=150;a[i*3]=r*Math.sin(inc)*Math.cos(az);a[i*3+1]=r*Math.sin(inc)*Math.sin(az);a[i*3+2]=r*Math.cos(inc);}return a;}
+  function cube(){var a=new Float32Array(N*3),s=125;for(var i=0;i<N;i++){var f=Math.floor(rnd()*6),u=(rnd()*2-1)*s,v=(rnd()*2-1)*s,x,y,z;if(f==0){x=s;y=u;z=v;}else if(f==1){x=-s;y=u;z=v;}else if(f==2){y=s;x=u;z=v;}else if(f==3){y=-s;x=u;z=v;}else if(f==4){z=s;x=u;y=v;}else{z=-s;x=u;y=v;}a[i*3]=x;a[i*3+1]=y;a[i*3+2]=z;}return a;}
+  function torus(){var a=new Float32Array(N*3),R=115,r=48;for(var i=0;i<N;i++){var u=rnd()*6.283,v=rnd()*6.283;a[i*3]=(R+r*Math.cos(v))*Math.cos(u);a[i*3+1]=(R+r*Math.cos(v))*Math.sin(u);a[i*3+2]=r*Math.sin(v);}return a;}
+  function galaxy(){var a=new Float32Array(N*3);for(var i=0;i<N;i++){var arm=i%3,t=Math.pow(rnd(),.5),rad=t*185,ang=t*6+arm*2.094+(rnd()-.5)*.6,h=(rnd()-.5)*24*(1-t);a[i*3]=rad*Math.cos(ang);a[i*3+1]=h;a[i*3+2]=rad*Math.sin(ang);}return a;}
+  function heart(){var a=new Float32Array(N*3);for(var i=0;i<N;i++){var t=rnd()*6.283,f=Math.pow(rnd(),.4),x=16*Math.pow(Math.sin(t),3),y=13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t);a[i*3]=x*8*f;a[i*3+1]=y*8*f+8;a[i*3+2]=(rnd()-.5)*46;}return a;}
+  var shapes=[sphere(),torus(),galaxy(),cube(),heart()];
+  var pos=new Float32Array(N*3); pos.set(shapes[0]);
+  var geo=new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  var mat=new THREE.PointsMaterial({color:0x7CFF39, size:1.8, transparent:true, opacity:.9, sizeAttenuation:true});
+  var cloud=new THREE.Points(geo, mat); scene.add(cloud);
+  var mx=0,my=0;
+  window.addEventListener('mousemove', function(e){ mx=(e.clientX/window.innerWidth-.5); my=(e.clientY/window.innerHeight-.5); }, {passive:true});
   window.addEventListener('resize', function(){ W=window.innerWidth; H=window.innerHeight; cam.aspect=W/H; cam.updateProjectionMatrix(); renderer.setSize(W,H); });
+  var cur=0,nxt=1,morph=0,spread=1,rotY=0,rotX=0,lastHx=0,lastHy=0,wasOn=false,pinchPrev=false;
+  function ease(t){return t*t*(3-2*t);}
+  function advance(){ cur=nxt; nxt=(nxt+1)%shapes.length; morph=0; }
   function anim(){
-    var hnd = window.__hand, on = hnd && hnd.active;
-    var tx = on ? hnd.x*200 : mx*150;
-    var ty = on ? -hnd.y*200 : -my*150;
-    cam.position.x += (tx - cam.position.x)*0.06;
-    cam.position.y += (ty - cam.position.y)*0.06;
-    var ts = (on && hnd.scale) ? hnd.scale : 1;
-    cloud.scale.setScalar(cloud.scale.x + (ts - cloud.scale.x)*0.1);
-    cloud.rotation.y += on ? 0.004 : 0.0016;
-    cloud.rotation.x += 0.0007;
+    var hnd=window.__hand, on=hnd&&hnd.active;
+    // morfagem continua entre as formas
+    morph += on ? 0.02 : 0.011;
+    if(on && hnd.pinch && !pinchPrev){ advance(); }
+    pinchPrev = on && hnd.pinch;
+    if(morph>=1){ advance(); }
+    var e=ease(morph), A=shapes[cur], B=shapes[nxt];
+    // abrir/fechar a mao expande/contrai (sensivel)
+    var tSpread = on ? (0.5 + (hnd.open||1)*0.95) : 1;
+    spread += (tSpread-spread)*0.2;
+    for(var i=0;i<N*3;i++){ pos[i]=(A[i]+(B[i]-A[i])*e)*spread; }
+    geo.attributes.position.needsUpdate=true;
+    // rotacao responsiva pela mao
+    if(on){ if(!wasOn){lastHx=hnd.x;lastHy=hnd.y;} rotY += (hnd.x-lastHx)*9; rotX += (hnd.y-lastHy)*9; lastHx=hnd.x; lastHy=hnd.y; }
+    else { rotY += 0.003; rotX += (my*0.6 - rotX)*0.02; }
+    wasOn=on;
+    cloud.rotation.y=rotY; cloud.rotation.x=rotX;
+    if(on){ cam.position.x += (0-cam.position.x)*0.06; cam.position.y += (0-cam.position.y)*0.06; }
+    else { cam.position.x += (mx*130-cam.position.x)*0.05; cam.position.y += (-my*130-cam.position.y)*0.05; }
     cam.lookAt(scene.position);
     renderer.render(scene, cam);
     requestAnimationFrame(anim);
@@ -555,13 +569,13 @@
   function d(a,b){var x=a.x-b.x,y=a.y-b.y,z=(a.z||0)-(b.z||0);return Math.sqrt(x*x+y*y+z*z);}
   function onResults(r){
     if(r.multiHandLandmarks && r.multiHandLandmarks.length){
-      var lm=r.multiHandLandmarks[0], palm=lm[9];
+      var lm=r.multiHandLandmarks[0], palm=lm[9], hs=d(lm[0],lm[5])+0.0001;
       window.__hand.x = (0.5 - palm.x);
       window.__hand.y = (palm.y - 0.5);
-      var open = d(lm[0],lm[12]) / (d(lm[0],lm[5]) + 0.0001);
-      window.__hand.scale = Math.max(0.55, Math.min(2.2, open*0.85));
+      window.__hand.open = Math.max(0.35, Math.min(2.3, d(lm[0],lm[12])/hs));
+      window.__hand.pinch = (d(lm[4],lm[8])/hs) < 0.45;
       window.__hand.active = true;
-      if(hint) hint.textContent='✋ Mexa a mão pra mover as partículas';
+      if(hint) hint.textContent='✋ Mova a mão · abra/feche pra expandir · junte polegar+indicador pra trocar a forma';
     } else {
       window.__hand.active=false;
       if(hint) hint.textContent='Mostre a mão pra câmera...';
@@ -571,7 +585,7 @@
     try{ if(camera && camera.stop) camera.stop(); }catch(e){}
     if(cam && cam.srcObject){ cam.srcObject.getTracks().forEach(function(t){t.stop();}); cam.srcObject=null; }
     if(cam) cam.classList.remove('on'); if(hint) hint.classList.remove('on');
-    btn.classList.remove('active'); btn.textContent='🖐️ Mover as partículas com as mãos';
+    btn.classList.remove('active'); btn.title='Controlar as partículas com as mãos';
     window.__hand.active=false; started=false;
   }
   btn.addEventListener('click', function(){
@@ -583,7 +597,7 @@
     camera=new Camera(cam, { onFrame: async function(){ try{ await hands.send({image:cam}); }catch(e){} }, width:640, height:480 });
     var p;
     try{ p=camera.start(); }catch(e){ alert('Permita o acesso à câmera para usar as mãos.'); return; }
-    var ok=function(){ cam.classList.add('on'); if(hint){hint.classList.add('on');hint.textContent='Mostre a mão pra câmera...';} btn.classList.add('active'); btn.textContent='✋ Parar câmera'; started=true; };
+    var ok=function(){ cam.classList.add('on'); if(hint){hint.classList.add('on');hint.textContent='Mostre a mão pra câmera...';} btn.classList.add('active'); btn.title='Parar câmera'; started=true; };
     if(p && p.then){ p.then(ok).catch(function(){ alert('Permita o acesso à câmera para controlar com as mãos.'); }); } else { ok(); }
   });
 })();
