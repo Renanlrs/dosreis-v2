@@ -191,6 +191,10 @@
   #handCam{position:fixed;left:0;bottom:0;width:2px;height:2px;opacity:0;pointer-events:none;z-index:-1}
   .handhint{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:130;background:rgba(0,0,0,.8);color:#fff;font-size:12px;padding:9px 15px;border-radius:999px;max-width:90vw;text-align:center;display:none}
   .handhint.on{display:block}
+  #handNum{position:fixed;top:44%;left:50%;transform:translate(-50%,-50%);z-index:125;font-family:'Arial Narrow','Helvetica Neue',Impact,sans-serif;font-size:clamp(130px,28vw,320px);font-weight:800;line-height:1;color:var(--green);text-shadow:0 0 70px rgba(124,255,57,.75);opacity:0;pointer-events:none;transition:opacity .25s}
+  #handNum.on{opacity:.92}
+  #handNum.pop{animation:numpop .4s ease}
+  @keyframes numpop{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}55%{opacity:1;transform:translate(-50%,-50%) scale(1.12)}100%{transform:translate(-50%,-50%) scale(1)}}
   .spotlight{position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(360px circle at var(--mx,50%) var(--my,22%),rgba(124,255,57,.11),transparent 62%);transition:opacity .3s}
   .reveal{transform:translateY(44px) scale(.975)}
   .reveal.in{transform:none}
@@ -432,6 +436,7 @@
 <a class="floatcta" href="https://wa.me/5519988013439?text=Ol%C3%A1!%20Quero%20crescer%20com%20a%20DOS%20REIS." target="_blank" rel="noopener">🚀 Quero crescer</a>
 <video id="handCam" playsinline muted></video>
 <div class="handhint" id="handHint"></div>
+<div id="handNum"></div>
 
 <script>
 (function(){
@@ -525,27 +530,36 @@
   var mx=0,my=0;
   window.addEventListener('mousemove', function(e){ mx=(e.clientX/window.innerWidth-.5); my=(e.clientY/window.innerHeight-.5); }, {passive:true});
   window.addEventListener('resize', function(){ W=window.innerWidth; H=window.innerHeight; cam.aspect=W/H; cam.updateProjectionMatrix(); renderer.setSize(W,H); });
-  var cur=0,nxt=1,morph=0,spread=1,rotY=0,rotX=0,lastHx=0,lastHy=0,wasOn=false,pinchPrev=false;
+  var srcPos=new Float32Array(N*3); srcPos.set(shapes[0]);
+  var targetShape=0, morph=1, baseSpin=0, tiltY=0, tiltX=0, idleF=0, lastShown=-1;
+  var numEl=document.getElementById('handNum');
   function ease(t){return t*t*(3-2*t);}
-  function advance(){ cur=nxt; nxt=(nxt+1)%shapes.length; morph=0; }
+  function setTarget(idx){ if(idx===targetShape) return; srcPos.set(pos); targetShape=idx; morph=0; }
   function anim(){
-    var hnd=window.__hand, on=hnd&&hnd.active;
-    // morfagem continua entre as formas
-    morph += on ? 0.02 : 0.011;
-    if(on && hnd.pinch && !pinchPrev){ advance(); }
-    pinchPrev = on && hnd.pinch;
-    if(morph>=1){ advance(); }
-    var e=ease(morph), A=shapes[cur], B=shapes[nxt];
-    // abrir/fechar a mao expande/contrai (sensivel)
-    var tSpread = on ? (0.5 + (hnd.open||1)*0.95) : 1;
-    spread += (tSpread-spread)*0.2;
-    for(var i=0;i<N*3;i++){ pos[i]=(A[i]+(B[i]-A[i])*e)*spread; }
+    var hnd=window.__hand, on=hnd&&hnd.active, cnt=on?(hnd.count||0):0;
+    // dedos escolhem a forma (1..5)
+    if(on && cnt>=1 && cnt<=5){ setTarget(cnt-1); idleF=0; }
+    else { idleF++; if(!on && morph>=1 && idleF>260){ setTarget((targetShape+1)%shapes.length); idleF=0; } }
+    // numero grande na tela
+    if(numEl){
+      if(on && cnt>=1 && cnt<=5){
+        if(cnt!==lastShown){ numEl.textContent=cnt; numEl.classList.remove('pop'); void numEl.offsetWidth; numEl.classList.add('pop'); lastShown=cnt; }
+        numEl.classList.add('on');
+      } else { numEl.classList.remove('on'); lastShown=-1; }
+    }
+    // morfagem suave rumo a forma escolhida
+    morph=Math.min(1, morph+0.035);
+    var e=ease(morph), B=shapes[targetShape];
+    for(var i=0;i<N*3;i++){ pos[i]=srcPos[i]+(B[i]-srcPos[i])*e; }
     geo.attributes.position.needsUpdate=true;
-    // rotacao responsiva pela mao
-    if(on){ if(!wasOn){lastHx=hnd.x;lastHy=hnd.y;} rotY += (hnd.x-lastHx)*9; rotX += (hnd.y-lastHy)*9; lastHx=hnd.x; lastHy=hnd.y; }
-    else { rotY += 0.003; rotX += (my*0.6 - rotX)*0.02; }
-    wasOn=on;
-    cloud.rotation.y=rotY; cloud.rotation.x=rotX;
+    // rotacao calma e controlada (tilt limitado + giro lento constante)
+    baseSpin += 0.0025;
+    var tTiltY = on ? hnd.x*1.6 : 0;
+    var tTiltX = on ? hnd.y*1.0 : (my*0.4);
+    tiltY += (tTiltY - tiltY)*0.07;
+    tiltX += (tTiltX - tiltX)*0.07;
+    cloud.rotation.y = baseSpin + tiltY;
+    cloud.rotation.x = tiltX;
     if(on){ cam.position.x += (0-cam.position.x)*0.06; cam.position.y += (0-cam.position.y)*0.06; }
     else { cam.position.x += (mx*130-cam.position.x)*0.05; cam.position.y += (-my*130-cam.position.y)*0.05; }
     cam.lookAt(scene.position);
@@ -569,15 +583,21 @@
   function d(a,b){var x=a.x-b.x,y=a.y-b.y,z=(a.z||0)-(b.z||0);return Math.sqrt(x*x+y*y+z*z);}
   function onResults(r){
     if(r.multiHandLandmarks && r.multiHandLandmarks.length){
-      var lm=r.multiHandLandmarks[0], palm=lm[9], hs=d(lm[0],lm[5])+0.0001;
+      var lm=r.multiHandLandmarks[0], palm=lm[9];
       window.__hand.x = (0.5 - palm.x);
       window.__hand.y = (palm.y - 0.5);
-      window.__hand.open = Math.max(0.35, Math.min(2.3, d(lm[0],lm[12])/hs));
-      window.__hand.pinch = (d(lm[4],lm[8])/hs) < 0.45;
+      function up(tip,pip){ return d(lm[0],lm[tip]) > d(lm[0],lm[pip]); }
+      var c=0;
+      if(up(8,6)) c++;
+      if(up(12,10)) c++;
+      if(up(16,14)) c++;
+      if(up(20,18)) c++;
+      if(d(lm[0],lm[4]) > d(lm[0],lm[2])*1.05) c++;
+      window.__hand.count = c;
       window.__hand.active = true;
-      if(hint) hint.textContent='✋ Mova a mão · abra/feche pra expandir · junte polegar+indicador pra trocar a forma';
+      if(hint) hint.textContent='✋ Levante 1 a 5 dedos pra escolher a forma · mexa a mão pra girar';
     } else {
-      window.__hand.active=false;
+      window.__hand.active=false; window.__hand.count=0;
       if(hint) hint.textContent='Mostre a mão pra câmera...';
     }
   }
